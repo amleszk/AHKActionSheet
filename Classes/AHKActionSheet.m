@@ -18,10 +18,10 @@ static const NSTimeInterval kDefaultAnimationDuration = 0.5f;
 static const CGFloat kBlurFadeRangeSize = 200.0f;
 static NSString * const kCellIdentifier = @"Cell";
 // How much user has to scroll beyond the top of the tableView for the view to dismiss automatically.
-static const CGFloat kAutoDismissOffset = 80.0f;
+static const CGFloat kAutoDismissOffset = 40.0f;
 // Offset at which there's a check if the user is flicking the tableView down.
-static const CGFloat kFlickDownHandlingOffset = 20.0f;
-static const CGFloat kFlickDownMinVelocity = 2000.0f;
+static const CGFloat kFlickDownHandlingOffset = 10.0f;
+static const CGFloat kFlickDownMinVelocity = 1000.0f;
 // How much free space to leave at the top (above the tableView's contents) when there's a lot of elements. It makes this control look similar to the UIActionSheet.
 static const CGFloat kTopSpaceMarginFraction = 0.333f;
 // cancelButton's shadow height as the ratio to the cancelButton's height
