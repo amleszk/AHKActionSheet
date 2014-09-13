@@ -423,11 +423,7 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
         [self.cancelButton addSubview:view];
         self.cancelButtonShadowView = view;
     }
-    
-    CAGradientLayer *gradientMask = [CAGradientLayer layer];
-    gradientMask.frame = self.cancelButton.bounds;
-    gradientMask.colors = @[ (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor ];
-    [self.cancelButton.layer setMask:gradientMask];
+
 }
 
 - (void)setUpTableView
