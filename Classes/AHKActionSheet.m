@@ -258,51 +258,49 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
     [self setUpBlurredBackgroundWithSnapshot:previousKeyWindowSnapshot];
     [self setUpCancelButton];
     [self setUpTableView];
-
-    void(^immediateAnimations)(void) = ^(void) {
+    
+    [UIView animateWithDuration:self.animationDuration
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseIn
+                     animations:^{
         self.blurredBackgroundView.alpha = 1.0f;
-    };
+    } completion:NULL];
 
-    void(^delayedAnimations)(void) = ^(void) {
-        self.cancelButton.frame = CGRectMake(0,
-                                             CGRectGetMaxY(self.bounds) - self.cancelButtonHeight,
-                                             CGRectGetWidth(self.bounds),
-                                             self.cancelButtonHeight);
-
-        // manual calculation of table's contentSize.height
-        CGFloat tableContentHeight = [self.items count] * self.buttonHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
-
-        CGFloat topInset;
-        BOOL buttonsFitInWithoutScrolling = tableContentHeight < CGRectGetHeight(self.tableView.frame) * (1.0 - kTopSpaceMarginFraction);
-        if (buttonsFitInWithoutScrolling) {
-            // show all buttons if there isn't many
-            topInset = CGRectGetHeight(self.tableView.frame) - tableContentHeight;
-        } else {
-            // leave an empty space on the top to make the control look similar to UIActionSheet
-            topInset = (CGFloat)round(CGRectGetHeight(self.tableView.frame) * kTopSpaceMarginFraction);
-        }
-        self.tableView.contentInset = UIEdgeInsetsMake(topInset, 0, 0, 0);
-
-        self.tableView.bounces = [self.cancelOnPanGestureEnabled boolValue] || !buttonsFitInWithoutScrolling;
-    };
-
-    if ([UIView respondsToSelector:@selector(animateKeyframesWithDuration:delay:options:animations:completion:)]){
-        // Animate sliding in tableView and cancel button with keyframe animation for a nicer effect.
-        [UIView animateKeyframesWithDuration:self.animationDuration delay:0 options:0 animations:^{
-            immediateAnimations();
-
-            [UIView addKeyframeWithRelativeStartTime:0.3f relativeDuration:0.7f animations:^{
-                delayedAnimations();
-            }];
-        } completion:nil];
-
+    
+    // manual calculation of table's contentSize.height
+    CGFloat tableContentHeight = [self.items count] * self.buttonHeight + CGRectGetHeight(self.tableView.tableHeaderView.frame);
+    
+    CGFloat topInset;
+    BOOL buttonsFitInWithoutScrolling = tableContentHeight < CGRectGetHeight(self.tableView.frame) * (1.0 - kTopSpaceMarginFraction);
+    if (buttonsFitInWithoutScrolling) {
+        // show all buttons if there isn't many
+        topInset = CGRectGetHeight(self.tableView.frame) - tableContentHeight;
     } else {
-
-        [UIView animateWithDuration:self.animationDuration animations:^{
-            immediateAnimations();
-            delayedAnimations();
-        }];
+        // leave an empty space on the top to make the control look similar to UIActionSheet
+        topInset = (CGFloat)round(CGRectGetHeight(self.tableView.frame) * kTopSpaceMarginFraction);
     }
+    self.tableView.contentInset = UIEdgeInsetsMake(topInset, 0, 0, 0);
+    self.tableView.contentOffset = CGPointMake(0, -topInset);
+    self.tableView.bounces = [self.cancelOnPanGestureEnabled boolValue] || !buttonsFitInWithoutScrolling;
+    CGFloat tableViewOffscreenPoint = CGRectGetHeight(self.frame) + self.tableView.contentOffset.y;
+    self.tableView.transform = CGAffineTransformMakeTranslation(0, tableViewOffscreenPoint);
+
+    
+    void(^actionSheetAnimations)(void) = ^(void) {
+        self.cancelButton.frame =
+        CGRectMake(0,CGRectGetMaxY(self.bounds) - self.cancelButtonHeight,
+                   CGRectGetWidth(self.bounds),self.cancelButtonHeight);
+        self.tableView.transform = CGAffineTransformIdentity;
+    };
+    
+    [UIView animateWithDuration:self.animationDuration
+                          delay:.2f
+         usingSpringWithDamping:0.75
+          initialSpringVelocity:5
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:actionSheetAnimations
+                     completion:NULL];
+
 }
 
 - (void)dismissAnimated:(BOOL)animated
@@ -425,6 +423,11 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
         [self.cancelButton addSubview:view];
         self.cancelButtonShadowView = view;
     }
+    
+    CAGradientLayer *gradientMask = [CAGradientLayer layer];
+    gradientMask.frame = self.cancelButton.bounds;
+    gradientMask.colors = @[ (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor ];
+    [self.cancelButton.layer setMask:gradientMask];
 }
 
 - (void)setUpTableView

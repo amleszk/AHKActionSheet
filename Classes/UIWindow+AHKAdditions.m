@@ -50,7 +50,7 @@
         imageSize = CGSizeMake([UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width);
     }
 
-    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+    UIGraphicsBeginImageContextWithOptions(imageSize, NO, [UIScreen mainScreen].scale);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
     CGContextTranslateCTM(context, self.center.x, self.center.y);
@@ -71,11 +71,7 @@
         }
     }
 
-    if([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
-        [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:YES];
-    } else {
-        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
-    }
+    [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
 
     CGContextRestoreGState(context);
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
