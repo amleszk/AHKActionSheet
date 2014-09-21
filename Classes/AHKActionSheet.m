@@ -294,7 +294,7 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
     };
     
     [UIView animateWithDuration:self.animationDuration
-                          delay:.2f
+                          delay:.1f
          usingSpringWithDamping:0.75
           initialSpringVelocity:5
                         options:UIViewAnimationOptionCurveEaseInOut
