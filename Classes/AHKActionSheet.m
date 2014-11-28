@@ -330,10 +330,8 @@ static const CGFloat kCancelButtonShadowHeightRatio = 0.333f;
 
     void(^tearDownView)(void) = ^(void) {
         // remove the views because it's easiest to just recreate them if the action sheet is shown again
-        for (UIView *view in @[self.tableView, self.cancelButton, self.blurredBackgroundView, self.window]) {
-            [view removeFromSuperview];
-        }
-
+        [self.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+        [self.window removeFromSuperview];
         self.window = nil;
         [self.previousKeyWindow makeKeyAndVisible];
 
